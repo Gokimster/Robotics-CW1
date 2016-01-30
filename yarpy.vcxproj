@@ -130,7 +130,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\robotology\yarp-2.3.64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\robotology\yarp-2.3.64\include;C:\Users\Gokimster\Desktop\school\Year 4\Robotics\opencv\build\include;C:\Users\Gokimster\Desktop\school\Year 4\Robotics\opencv\build\x64\vc14\bin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -160,7 +160,7 @@
     <Link>
       <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;C:\Program Files (x86)\robotology\yarp-2.3.64\lib\YARP_math.lib;C:\Program Files (x86)\robotology\yarp-2.3.64\lib\YARP_dev.lib;C:\Program Files (x86)\robotology\yarp-2.3.64\lib\YARP_name.lib;C:\Program Files (x86)\robotology\yarp-2.3.64\lib\YARP_init.lib;C:\Program Files (x86)\robotology\yarp-2.3.64\lib\YARP_sig.lib;C:\Program Files (x86)\robotology\yarp-2.3.64\lib\YARP_OS.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Gokimster\Desktop\school\Year 4\Robotics\opencv\build;C:\Users\Gokimster\Desktop\school\Year 4\Robotics\opencv\build\x64\vc14\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>C:/Users/Gokimster/Desktop/school/Year 4/Robotics/CW/Release/yarpy.lib</ImportLibrary>

@@ -7,14 +7,16 @@
 #include <yarp/os/Time.h>
 #include <yarp/os/Property.h> 
 #include <string>
-//#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 #include "lookAtLocation.h"
 
 using namespace yarp::sig;
 using namespace yarp::os;
-//using namespace cv;
+using namespace cv;
 
-//Mat img;
+Mat img;
+Mat bwImg;
+int const max_BINARY_value = 255;
 
 
 void showVideo()
@@ -52,6 +54,47 @@ int main(int argc, char *argv[])
 			double xMean = 0;
 			double yMean = 0;
 			int ct = 0;
+			img = Mat(image->width(), image->height(), CV_8UC3);
+			for (int x = 0; x < image->width(); x++) {
+				for (int y = 0; y < image->height(); y++) {
+					PixelRgb &pixel = image->pixel(x, y);
+					img.at<cv::Scalar>(x, y) = cv::Scalar((double)pixel.r, (double)pixel.g, (double)pixel.b);
+				}
+			}
+			//make image black and white
+			cv::cvtColor(img, bwImg, CV_BGR2GRAY);
+
+			//apply binary threshold
+			threshold(bwImg, bwImg, 150, max_BINARY_value, 0);
+
+			GaussianBlur(bwImg, bwImg, Size(9, 9), 2, 2);
+
+			std::vector <Vec3f> circles;
+
+			HoughCircles(bwImg, circles, CV_HOUGH_GRADIENT, 1, bwImg.rows / 8, 200, 100, 0, 0);
+
+			int maxRadius = 0;
+			int maxRadiusCircleIndex = 0;
+			for (size_t i = 0; i < circles.size(); i++)
+			{
+				int radius = cvRound(circles[i][2]);
+				if (radius > maxRadius)
+				{
+					maxRadius = radius;
+					maxRadiusCircleIndex = i;
+				}
+			}
+			if (maxRadius > 10) {
+				printf("Best guess at circle target: %g %g\n", circles[maxRadiusCircleIndex][0], circles[maxRadiusCircleIndex][1]);
+				Vector &target = targetPort.prepare();
+				target.resize(3);
+				target[0] = circles[maxRadiusCircleIndex][0];
+				target[1] = circles[maxRadiusCircleIndex][1];
+				target[2] = 1;
+				targetPort.write();
+			}
+
+			/*
 			for (int x = 0; x<image->width(); x++) {
 				for (int y = 0; y<image->height(); y++) {
 					PixelRgb& pixel = image->pixel(x, y);
@@ -78,7 +121,7 @@ int main(int argc, char *argv[])
 				target[1] = yMean;
 				target[2] = 1;
 				targetPort.write();
-			}
+			}*/
 			else {
 				Vector& target = targetPort.prepare();
 				target.resize(3);
