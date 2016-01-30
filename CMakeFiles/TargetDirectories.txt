@@ -1,0 +1,3 @@
+C:/Users/Gokimster/Desktop/school/Year 4/Robotics/CW/CMakeFiles/ALL_BUILD.dir
+C:/Users/Gokimster/Desktop/school/Year 4/Robotics/CW/CMakeFiles/ZERO_CHECK.dir
+C:/Users/Gokimster/Desktop/school/Year 4/Robotics/CW/CMakeFiles/yarpy.dir
