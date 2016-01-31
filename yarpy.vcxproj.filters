@@ -20,5 +20,12 @@
     <ClInclude Include="lookAtLocation.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CW1.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="test.png" />
   </ItemGroup>
 </Project>

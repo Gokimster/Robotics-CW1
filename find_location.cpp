@@ -58,40 +58,48 @@ int main(int argc, char *argv[])
 			int ct = 0;
 			//printf("Made Mat \n");
 			IplImage* i = (IplImage*)image->getIplImage();
-			Mat img(i, true);
+			img = cvarrToMat(i, true);
+			Mat bwImg(img.rows, img.cols, img.type());
 			//printf("Values Mat \n");
 			//make image black and white
-			cv::cvtColor(img, bwImg, CV_BGR2GRAY);   
+			bool t = bwImg.type() == CV_8UC3;
+			cv::cvtColor(img, bwImg, CV_BGR2GRAY, CV_8UC3);
 			//printf("Greyscale \n");
 			//apply binary threshold
+			t = bwImg.type() == CV_8UC3;
 			//imshow("Hough Circle Transform Demo", bwImg);
 			threshold(bwImg, bwImg, 100, max_BINARY_value, 1);
+			t = bwImg.type() == CV_8UC3;
 			//imshow("Hough Circle Transform Demo", bwImg);
 			//printf("Thresh \n");
-			GaussianBlur(bwImg, bwImg, Size(15, 15), 2, 2);
+			GaussianBlur(bwImg, bwImg, Size(9, 9), 2, 2);
+			t = bwImg.type() == CV_8UC3;
 			//printf("Blur \n");
-			std::vector <Vec3f> circles;
+			vector <Vec3f> circles;
+			//Mat circles;
 			//printf("Circles \n");
-			HoughCircles(bwImg, circles, CV_HOUGH_GRADIENT, 1, 300, 50, 10, 100, 500);
-
+			bool s = bwImg.type() == CV_8UC3;
+			//Canny(bwImg, bwImg, 50, 150, 3);
+			HoughCircles(bwImg, circles, CV_HOUGH_GRADIENT, 1, 10,
+				100, 30, 1, 30 // change the last two parameters
+							   // (min_radius & max_radius) to detect larger circles
+				);
 			//namedWindow("Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE);
 			//imshow("Hough Circle Transform Demo", bwImg);
-			waitKey(0);
+			//waitKey(0);
 			int maxRadius = 0;
 			int maxAcceptedRadius = 500;
-			int maxRadiusCircleIndex = 0;
-			for (size_t i = 0; i < 100; i++)//circles.size(); i++)
+			int maxRadiusCircleIndex = 0;/*
+			for (int i = 0; i < circles.size(); i++)//circles.size(); i++)
 			{
-				if (i<100)
+				int radius = cvRound(circles[i][2]);
+				if (radius > maxRadius && radius <= maxAcceptedRadius)
 				{
-					int radius = cvRound(circles[i][2]);
-					if (radius > maxRadius && radius <= maxAcceptedRadius)
-					{
-						maxRadius = radius;
-						maxRadiusCircleIndex = i;
-					}
+					maxRadius = radius;
+					maxRadiusCircleIndex = i;
 				}
 			}
+			
 			printf("done circles");
 			if (maxRadius > 10) {
 				printf("Best guess at circle target: %g %g\n", circles[maxRadiusCircleIndex][0], circles[maxRadiusCircleIndex][1]);
@@ -101,7 +109,7 @@ int main(int argc, char *argv[])
 				target[1] = circles[maxRadiusCircleIndex][1];
 				target[2] = 1;
 				targetPort.write();
-			}else {
+			}else*/ {
 				yarp::sig::Vector& target = targetPort.prepare();
 				target.resize(3);
 				target[0] = 0;
