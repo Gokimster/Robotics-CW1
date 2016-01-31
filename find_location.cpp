@@ -8,6 +8,7 @@
 #include <yarp/os/Property.h> 
 #include <string>
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
 #include "lookAtLocation.h"
 
 using namespace yarp::sig;
@@ -40,90 +41,68 @@ int main(int argc, char *argv[])
 {
 	Network yarp;
 
-	BufferedPort<ImageOf<PixelRgb> > imagePort;  // make a port for reading images
-	BufferedPort<Vector> targetPort;
+	BufferedPort<ImageOf<PixelBgr> > imagePort;  // make a port for reading images
+	BufferedPort<yarp::sig::Vector> targetPort;
 	showVideo();
 	imagePort.open("/tutorial/image/in");  // give the port a name
 	targetPort.open("/tutorial/target/out");
-	Network::connect("/icubSim/cam", "/tutorial/image/in");
-	lookAtLocation *look = new lookAtLocation();
-	while (true) { // repeat forever
-		ImageOf<PixelRgb> *image = imagePort.read();
+	Network::connect("/icubSim/cam/left", "/tutorial/image/in");
+	//lookAtLocation *look = new lookAtLocation();
+	while (true) {	 // repeat forever
+		ImageOf<PixelBgr> *image = imagePort.read();
 		if (image != NULL) { // check we actually got something
-							 //printf("We got an image of size %dx%d\n", image->width(), image->height());
+			printf("We got an image of size %dx%d\n", image->width(), image->height());
+
 			double xMean = 0;
 			double yMean = 0;
 			int ct = 0;
-			img = Mat(image->width(), image->height(), CV_8UC3);
-			for (int x = 0; x < image->width(); x++) {
-				for (int y = 0; y < image->height(); y++) {
-					PixelRgb &pixel = image->pixel(x, y);
-					img.at<cv::Scalar>(x, y) = cv::Scalar((double)pixel.r, (double)pixel.g, (double)pixel.b);
-				}
-			}
+			//printf("Made Mat \n");
+			IplImage* i = (IplImage*)image->getIplImage();
+			Mat img(i, true);
+			//printf("Values Mat \n");
 			//make image black and white
-			cv::cvtColor(img, bwImg, CV_BGR2GRAY);
-
+			cv::cvtColor(img, bwImg, CV_BGR2GRAY);   
+			//printf("Greyscale \n");
 			//apply binary threshold
-			threshold(bwImg, bwImg, 150, max_BINARY_value, 0);
-
-			GaussianBlur(bwImg, bwImg, Size(9, 9), 2, 2);
-
+			//imshow("Hough Circle Transform Demo", bwImg);
+			threshold(bwImg, bwImg, 100, max_BINARY_value, 1);
+			//imshow("Hough Circle Transform Demo", bwImg);
+			//printf("Thresh \n");
+			GaussianBlur(bwImg, bwImg, Size(15, 15), 2, 2);
+			//printf("Blur \n");
 			std::vector <Vec3f> circles;
+			//printf("Circles \n");
+			HoughCircles(bwImg, circles, CV_HOUGH_GRADIENT, 1, 300, 50, 10, 100, 500);
 
-			HoughCircles(bwImg, circles, CV_HOUGH_GRADIENT, 1, bwImg.rows / 8, 200, 100, 0, 0);
-
+			//namedWindow("Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE);
+			//imshow("Hough Circle Transform Demo", bwImg);
+			waitKey(0);
 			int maxRadius = 0;
+			int maxAcceptedRadius = 500;
 			int maxRadiusCircleIndex = 0;
-			for (size_t i = 0; i < circles.size(); i++)
+			for (size_t i = 0; i < 100; i++)//circles.size(); i++)
 			{
-				int radius = cvRound(circles[i][2]);
-				if (radius > maxRadius)
+				if (i<100)
 				{
-					maxRadius = radius;
-					maxRadiusCircleIndex = i;
+					int radius = cvRound(circles[i][2]);
+					if (radius > maxRadius && radius <= maxAcceptedRadius)
+					{
+						maxRadius = radius;
+						maxRadiusCircleIndex = i;
+					}
 				}
 			}
+			printf("done circles");
 			if (maxRadius > 10) {
 				printf("Best guess at circle target: %g %g\n", circles[maxRadiusCircleIndex][0], circles[maxRadiusCircleIndex][1]);
-				Vector &target = targetPort.prepare();
+				yarp::sig::Vector &target = targetPort.prepare();
 				target.resize(3);
 				target[0] = circles[maxRadiusCircleIndex][0];
 				target[1] = circles[maxRadiusCircleIndex][1];
 				target[2] = 1;
 				targetPort.write();
-			}
-
-			/*
-			for (int x = 0; x<image->width(); x++) {
-				for (int y = 0; y<image->height(); y++) {
-					PixelRgb& pixel = image->pixel(x, y);
-					// very simple test for blueishness
-					// make sure blue level exceeds red and green by a factor of 2
-					if (pixel.b>pixel.r*1.2 + 10 && pixel.b>pixel.g*1.2 + 10) {
-						// there's a blueish pixel at (x,y)!
-						// let's find the average location of these pixels
-						xMean += x;
-						yMean += y;
-						ct++;
-					}
-				}
-			}
-			if (ct>0) {
-				xMean /= ct;
-				yMean /= ct;
-			}
-			if (ct>(image->width() / 20)*(image->height() / 20)) {
-				//printf("Best guess at blue target: %g %g\n", xMean, yMean);
-				Vector &target = targetPort.prepare();
-				target.resize(3);
-				target[0] = xMean;
-				target[1] = yMean;
-				target[2] = 1;
-				targetPort.write();
-			}*/
-			else {
-				Vector& target = targetPort.prepare();
+			}else {
+				yarp::sig::Vector& target = targetPort.prepare();
 				target.resize(3);
 				target[0] = 0;
 				target[1] = 0;
@@ -131,7 +110,7 @@ int main(int argc, char *argv[])
 				targetPort.write();
 			}
 
-			look->doLook();
+			//look->doLook();
 
 		}
 	}

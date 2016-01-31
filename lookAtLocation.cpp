@@ -46,8 +46,8 @@ void lookAtLocation::doLook()
 		double y = (*target)[1];
 		double conf = (*target)[2];
 
-		x -= 320 / 2;
-		y -= 240 / 2;
+		//x -= 320 / 2;
+		//y -= 240 / 2;
 
 		double vx = x*0.1;
 		double vy = -y*0.1;
