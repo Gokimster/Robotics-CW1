@@ -46,8 +46,8 @@ void lookAtLocation::doLook()
 		double y = (*target)[1];
 		double conf = (*target)[2];
 
-		//x -= 320 / 2;
-		//y -= 240 / 2;
+		x -= 320 / 2;
+		y -= 240 / 2;
 
 		double vx = x*0.1;
 		double vy = -y*0.1;
@@ -57,16 +57,24 @@ void lookAtLocation::doLook()
 		{
 			setpoints[i] = 0;
 		}
-		if (conf>0.5) 
+		Vector tmp;
+		tmp.resize(jnts);
+		for (int i = 0; i < jnts; i++) {
+			tmp[i] = 0;
+		}
+		vel->setRefAccelerations(tmp.data());
+		pos->setRefAccelerations(tmp.data());
+		pos->setRefSpeeds(tmp.data());
+		if (conf > 0.5)
 		{
+			tmp[3] = 40;
+			tmp[4] = 40;
 			setpoints[3] = vy;
 			setpoints[4] = vx;
+			vel->setRefAccelerations(tmp.data());
+			pos->setRefAccelerations(tmp.data());
+			pos->setRefSpeeds(tmp.data());
+			vel->velocityMove(setpoints.data());
 		}
-		else 
-		{
-			setpoints[3] = 0;
-			setpoints[4] = 0;
-		}
-		vel->velocityMove(setpoints.data());
 	}
 }
