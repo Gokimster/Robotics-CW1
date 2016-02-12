@@ -33,14 +33,8 @@ lookAtLocation::lookAtLocation()
 
 void lookAtLocation::doLook()
 {
-	Vector *target = targetPort.read();  // read a target
-	if (target != NULL) { // check we actually got something
-		//printf("We got a vector containing");
-		for (size_t i = 0; i<target->size(); i++) 
-		{
-			//printf(" %g", (*target)[i]);
-		}
-		//printf("\n");
+	Vector *target = targetPort.read(); 
+	if (target != NULL) { 
 
 		double x = (*target)[0];
 		double y = (*target)[1];
@@ -57,23 +51,11 @@ void lookAtLocation::doLook()
 		{
 			setpoints[i] = 0;
 		}
-		Vector tmp;
-		tmp.resize(jnts);
-		for (int i = 0; i < jnts; i++) {
-			tmp[i] = 0;
-		}
-		vel->setRefAccelerations(tmp.data());
-		pos->setRefAccelerations(tmp.data());
-		pos->setRefSpeeds(tmp.data());
+
 		if (conf > 0.5)
 		{
-			tmp[3] = 40;
-			tmp[4] = 40;
 			setpoints[3] = vy;
 			setpoints[4] = vx;
-			vel->setRefAccelerations(tmp.data());
-			pos->setRefAccelerations(tmp.data());
-			pos->setRefSpeeds(tmp.data());
 			vel->velocityMove(setpoints.data());
 		}
 	}

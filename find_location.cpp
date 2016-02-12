@@ -43,42 +43,42 @@ int main(int argc, char *argv[])
 
 	BufferedPort<ImageOf<PixelBgr> > imagePort;  // make a port for reading images
 	BufferedPort<yarp::sig::Vector> targetPort;
+
 	showVideo();
 	imagePort.open("/tutorial/image/in");  // give the port a name
 	targetPort.open("/tutorial/target/out");
 	Network::connect("/icubSim/cam/left", "/tutorial/image/in");
-	lookAtLocation *look = new lookAtLocation();
-	while (true) {	 // repeat forever
-		ImageOf<PixelBgr> *image = imagePort.read();
-		if (image != NULL) { // check we actually got something
-			printf("We got an image of size %dx%d\n", image->width(), image->height());
 
-			double xMean = 0;
-			double yMean = 0;
-			int ct = 0;
-			//printf("Made Mat \n");
+	lookAtLocation *look = new lookAtLocation();
+
+	while (true) {
+		ImageOf<PixelBgr> *image = imagePort.read();
+		if (image != NULL) {
+
 			IplImage* i = (IplImage*)image->getIplImage();
 			img = cvarrToMat(i, true);
 			Mat bwImg(img.rows, img.cols, img.type());
 
 			//make image black and white
 			cvtColor(img, bwImg, CV_BGR2GRAY, CV_8UC3);
-			//apply binary threshold
-			//imshow("Hough Circle Transform Demo", bwImg);
-			threshold(bwImg, bwImg, 100, max_BINARY_value, 1);
-			//imshow("Hough Circle Transform Demo", bwImg);
-			GaussianBlur(bwImg, bwImg, Size(9, 9), 2, 2);
-			vector <Vec3f> circles;
 
-			//Canny(bwImg, bwImg, 50, 150, 3);
+			//apply binary threshold
+			threshold(bwImg, bwImg, 100, max_BINARY_value, THRESH_BINARY);
+
+			//blur the image
+			GaussianBlur(bwImg, bwImg, Size(9, 9), 2, 2);
+
+			//hough circle detection
+			vector <Vec3f> circles;
 			HoughCircles(bwImg, circles, CV_HOUGH_GRADIENT, 1, 10, 100, 30, 0, 0);
-			//namedWindow("Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE);
-			imshow("Hough Circle Transform Demo", bwImg);
-			waitKey(0);
+
+			//Uncomment the following 2 lines to display image after blurring
+			//imshow("Hough Circle Transform Demo", bwImg);
+			//waitKey(0);
 			int maxRadius = 0;
 			int maxAcceptedRadius = 500;
 			int maxRadiusCircleIndex = 0;
-			for (int i = 0; i < circles.size(); i++)//circles.size(); i++)
+			for (int i = 0; i < circles.size(); i++)
 			{
 				int radius = cvRound(circles[i][2]);
 				if (radius > maxRadius && radius <= maxAcceptedRadius)
@@ -87,8 +87,6 @@ int main(int argc, char *argv[])
 					maxRadiusCircleIndex = i;
 				}
 			}
-
-			printf("Circles size %d, maxRadius %d, maxradiusIndex %d", circles.size(), maxRadius, maxRadiusCircleIndex);
 
 			if (maxRadius > 10) {
 				printf("Best guess at circle target: %g %g\n", circles[maxRadiusCircleIndex][0], circles[maxRadiusCircleIndex][1]);
