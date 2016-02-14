@@ -19,12 +19,11 @@ Mat img;
 Mat bwImg;
 int const max_BINARY_value = 255;
 
-
+//connect video to the screen in the simuator
 void showVideo()
 {
 	Property p;
 	p.put("device", "test_grabber");
-	//p.put("subdevice", "test_grabber");
 	p.put("name", "/test/video");
 	p.put("mode", "ball");
 	PolyDriver dev;
@@ -32,31 +31,38 @@ void showVideo()
 	if (dev.isValid())
 	{
 		Network::connect("/test/video", "/icubSim/texture/screen");
-		printf("CONNECTED VIDEO");
 	}
-	printf("CONNECTED VIDEO?");
 }
 
 int main(int argc, char *argv[])
 {
+	//init yarp network
 	Network yarp;
 
-	BufferedPort<ImageOf<PixelBgr> > imagePort;  // make a port for reading images
+	//port for readin images
+	BufferedPort<ImageOf<PixelBgr> > imagePort;
+	//port for sending data to look at a location
 	BufferedPort<yarp::sig::Vector> targetPort;
 
 	showVideo();
-	imagePort.open("/tutorial/image/in");  // give the port a name
+	//open ports
+	imagePort.open("/tutorial/image/in"); 
 	targetPort.open("/tutorial/target/out");
+	//connect camera to our image port
 	Network::connect("/icubSim/cam/left", "/tutorial/image/in");
 
+	//creat new lookatlocation which handles robot movement
 	lookAtLocation *look = new lookAtLocation();
 
 	while (true) {
+		//read image from port
 		ImageOf<PixelBgr> *image = imagePort.read();
 		if (image != NULL) {
 
+			//transform image to Mat for use in openCV
 			IplImage* i = (IplImage*)image->getIplImage();
 			img = cvarrToMat(i, true);
+			//init Mat
 			Mat bwImg(img.rows, img.cols, img.type());
 
 			//make image black and white
@@ -75,6 +81,8 @@ int main(int argc, char *argv[])
 			//Uncomment the following 2 lines to display image after blurring
 			//imshow("Hough Circle Transform Demo", bwImg);
 			//waitKey(0);
+
+			//go through all the circles found in the image and select the largest one (based on radius)
 			int maxRadius = 0;
 			int maxAcceptedRadius = 500;
 			int maxRadiusCircleIndex = 0;
@@ -88,7 +96,8 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			if (maxRadius > 10) {
+			if (maxRadius > 0) {
+				//send circle coordinates to the targetPort which will be read by lookatlocation
 				printf("Best guess at circle target: %g %g\n", circles[maxRadiusCircleIndex][0], circles[maxRadiusCircleIndex][1]);
 				yarp::sig::Vector &target = targetPort.prepare();
 				target.resize(3);
@@ -97,6 +106,7 @@ int main(int argc, char *argv[])
 				target[2] = 1;
 				targetPort.write();
 			}else{
+				//send coordinates 0, 0 and confidence 0 if didn't find a proper circle
 				yarp::sig::Vector& target = targetPort.prepare();
 				target.resize(3);
 				target[0] = 0;
@@ -105,6 +115,7 @@ int main(int argc, char *argv[])
 				targetPort.write();
 			}
 
+			//call doLook from lookat location, this checks the targetPort and moves the robot to look at that location
 			look->doLook();
 
 		}
