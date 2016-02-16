@@ -78,9 +78,9 @@ int main(int argc, char *argv[])
 			vector <Vec3f> circles;
 			HoughCircles(bwImg, circles, CV_HOUGH_GRADIENT, 1, 10, 100, 30, 0, 0);
 
-			//Uncomment the following 2 lines to display image after blurring
-			//imshow("Hough Circle Transform Demo", bwImg);
-			//waitKey(0);
+			//comment the following 2 lines to make the program run without pressing a key
+			imshow("Hough Circle Transform Demo", bwImg);
+			waitKey(0);
 
 			//go through all the circles found in the image and select the largest one (based on radius)
 			int maxRadius = 0;
