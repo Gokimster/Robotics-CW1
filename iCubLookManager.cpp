@@ -1,7 +1,7 @@
-#include "lookAtLocation.h"
+#include "iCubLookManager.h"
 
 
-void lookAtLocation::lookAtLocationInit() {
+void iCubLookManager::lookAtLocationInit() {
 
 	//open a recieving port and connect it to the targetPort from find_location
 	targetPort.open("/tutorial/target/in");
@@ -33,12 +33,12 @@ void lookAtLocation::lookAtLocationInit() {
 	printf("Joints %d", jnts);
 }
 
-lookAtLocation::lookAtLocation()
+iCubLookManager::iCubLookManager()
 {
-	lookAtLocationInit();
+	iCubLookManager();
 }
 
-void lookAtLocation::doLook()
+void iCubLookManager::doLook()
 {
 	//get info from the targetPort 
 	Vector *target = targetPort.read(); 

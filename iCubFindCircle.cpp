@@ -9,7 +9,7 @@
 #include <string>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "lookAtLocation.h"
+#include "iCubLookManager.h"
 
 using namespace yarp::sig;
 using namespace yarp::os;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 	Network::connect("/icubSim/cam/left", "/tutorial/image/in");
 
 	//creat new lookatlocation which handles robot movement
-	lookAtLocation *look = new lookAtLocation();
+	iCubLookManager *look = new iCubLookManager();
 
 	while (true) {
 		//read image from port

@@ -7,9 +7,9 @@ using namespace yarp::os;
 using namespace yarp::sig;
 using namespace yarp::dev;
 
-class lookAtLocation {
+class iCubLookManager {
 	public:
-		lookAtLocation();
+		iCubLookManager();
 		void lookAtLocationInit();
 		void doLook();
 	private:
