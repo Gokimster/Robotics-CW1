@@ -10,7 +10,7 @@ using namespace yarp::dev;
 class iCubLookManager {
 	public:
 		iCubLookManager();
-		void lookAtLocationInit();
+		void iCubLookManagerInit();
 		void doLook();
 	private:
 		Network yarp;

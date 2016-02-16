@@ -1,7 +1,7 @@
 #include "iCubLookManager.h"
 
 
-void iCubLookManager::lookAtLocationInit() {
+void iCubLookManager::iCubLookManagerInit() {
 
 	//open a recieving port and connect it to the targetPort from find_location
 	targetPort.open("/tutorial/target/in");
@@ -35,7 +35,7 @@ void iCubLookManager::lookAtLocationInit() {
 
 iCubLookManager::iCubLookManager()
 {
-	iCubLookManager();
+	iCubLookManagerInit();
 }
 
 void iCubLookManager::doLook()

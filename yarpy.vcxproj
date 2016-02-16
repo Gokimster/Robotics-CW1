@@ -606,8 +606,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\Gokimster\Desktop\school\Year 4\Robotics\CW\find_location.cpp" />
-    <ClCompile Include="C:\Users\Gokimster\Desktop\school\Year 4\Robotics\CW\lookAtLocation.cpp" />
+    <ClCompile Include="iCubFindCircle.cpp" />
+    <ClCompile Include="iCubLookManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:/Users/Gokimster/Desktop/school/Year 4/Robotics/CW/ZERO_CHECK.vcxproj">
@@ -615,7 +615,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lookAtLocation.h" />
+    <ClInclude Include="iCubLookManager.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -623,6 +623,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <Image Include="test.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
